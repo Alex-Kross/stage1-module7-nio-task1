@@ -67,7 +67,6 @@ public class FileReader {
                 profile.setName(wordStringMather.group());
             }
         } else if (ageStringMather.find()) {
-            String s =data.substring(ageStringMather.end());
             digitStringMather = DIGIT_STRING_PATTERN.matcher(data.substring(ageStringMather.end()));
             if (digitStringMather.find()) {
                 profile.setAge(Integer.parseInt(digitStringMather.group()));
