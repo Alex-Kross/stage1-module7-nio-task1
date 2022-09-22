@@ -10,11 +10,15 @@ import java.util.regex.Pattern;
 
 
 public class FileReader {
+    private static final String WORD_STRING = "[a-zA-Z]+[^\n\r]";
+    private static final String DIGIT_STRING = "[0-9]+[^\n\r]";
     private static final String NAME_STRING = "name:{1}[\\s]|Name:{1}[\\s]|name{1}[\\s]|Name{1}[\\s]";
     private static final  String AGE_STRING = "age:{1}[\\s]|Age:{1}[\\s]|age{1}[\\s]|Age{1}[\\s]";
     private static final  String EMAIL_STRING = "email:{1}[\\s]|Email:{1}[\\s]|email{1}[\\s]|Email{1}[\\s]";
     private static final  String PHONE_STRING = "phone:{1}[\\s]|Phone:{1}[\\s]|phone{1}[\\s]|Phone{1}[\\s]";
 
+    private static final Pattern DIGIT_STRING_PATTERN = Pattern.compile(DIGIT_STRING);
+    private static final Pattern WORD_STRING_PATTERN = Pattern.compile(WORD_STRING);
     private static final Pattern NAME_STRING_PATTERN = Pattern.compile(NAME_STRING);
     private static final  Pattern AGE_STRING_PATTERN = Pattern.compile(AGE_STRING);
     private static final  Pattern EMAIL_STRING_PATTERN = Pattern.compile(EMAIL_STRING);
@@ -36,8 +40,7 @@ public class FileReader {
                     char tempChar = (char) buffer.get();
                     stringBuilder.append(tempChar);
                     if (tempChar == '\n') {
-                        profile = parseString(profile, stringBuilder.delete(stringBuilder.length() - 2,
-                                stringBuilder.length()).toString());
+                        profile = parseString(profile, stringBuilder.toString());
                         stringBuilder.delete(0, stringBuilder.length());
                     }
                 }
@@ -56,15 +59,28 @@ public class FileReader {
         Matcher ageStringMather = AGE_STRING_PATTERN.matcher(data);
         Matcher emailStringMather = EMAIL_STRING_PATTERN.matcher(data);
         Matcher phoneStringMather = PHONE_STRING_PATTERN.matcher(data);
-
+        Matcher wordStringMather;
+        Matcher digitStringMather;
         if (nameStringMather.find()) {
-            profile.setName(data.substring(nameStringMather.end()));
+            wordStringMather = WORD_STRING_PATTERN.matcher(data.substring(nameStringMather.end()));
+            if (wordStringMather.find()) {
+                profile.setName(wordStringMather.group());
+            }
         } else if (ageStringMather.find()) {
-            profile.setAge(Integer.parseInt(data.substring(ageStringMather.end())));
+            digitStringMather = DIGIT_STRING_PATTERN.matcher(data.substring(ageStringMather.end()));
+            if (digitStringMather.find()) {
+                profile.setAge(Integer.parseInt(digitStringMather.group()));
+            }
         } else if (emailStringMather.find()) {
-            profile.setEmail(data.substring(emailStringMather.end()));
+            wordStringMather = WORD_STRING_PATTERN.matcher(data.substring(emailStringMather.end()));
+            if (wordStringMather.find()) {
+                profile.setEmail(wordStringMather.group());
+            }
         } else if (phoneStringMather.find()) {
-            profile.setPhone((long) Integer.parseInt(data.substring(phoneStringMather.end())));
+            digitStringMather = DIGIT_STRING_PATTERN.matcher(data.substring(phoneStringMather.end()));
+            if (digitStringMather.find()) {
+                profile.setPhone((long) Integer.parseInt(digitStringMather.group()));
+            }
         }
         return profile;
     }
