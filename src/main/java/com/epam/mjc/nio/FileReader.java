@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 public class FileReader {
     private static final String WORD_STRING = "[a-zA-Z]+[^\n\r]";
-    private static final String DIGIT_STRING = "[0-9]+[^\n\r]";
+    private static final String DIGIT_STRING = "[0-9]*[^\n\r]";
     private static final String NAME_STRING = "name:{1}[\\s]|Name:{1}[\\s]|name{1}[\\s]|Name{1}[\\s]";
     private static final  String AGE_STRING = "age:{1}[\\s]|Age:{1}[\\s]|age{1}[\\s]|Age{1}[\\s]";
     private static final  String EMAIL_STRING = "email:{1}[\\s]|Email:{1}[\\s]|email{1}[\\s]|Email{1}[\\s]";
@@ -67,6 +67,7 @@ public class FileReader {
                 profile.setName(wordStringMather.group());
             }
         } else if (ageStringMather.find()) {
+            String s =data.substring(ageStringMather.end());
             digitStringMather = DIGIT_STRING_PATTERN.matcher(data.substring(ageStringMather.end()));
             if (digitStringMather.find()) {
                 profile.setAge(Integer.parseInt(digitStringMather.group()));
